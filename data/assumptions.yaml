@@ -1,0 +1,169 @@
+# =============================================================================
+# NEXUS financial model - single source of truth
+# =============================================================================
+# Every figure the model uses lives here, with the source document noted in a
+# comment. The source materials (Executive Summary, Consultant Layout Plan,
+# Pitch Deck, Financial Calculation workbook) disagree on several numbers
+# because they were written at different points in the challenge. Where they
+# conflict, the choice made here is explained in docs/03-financial-model.md.
+# Nothing in the code hard-codes a number; change a value here and the whole
+# model, charts and tables update.
+
+project:
+  name: NEXUS
+  full_name: Net Zero Energy Transition Exchange at Tyseley
+  client: University of Birmingham
+  partner: Turner & Townsend
+  challenge: Masters Consultancy Challenge 2026
+  capital_ceiling_gbp: 50_000_000   # hard ceiling, all drafts agree
+  gia_m2: 6000                       # gross internal area
+  storeys: 3
+  programme_months: 42
+  currency: GBP
+
+# -----------------------------------------------------------------------------
+# CAPEX cost plan
+# -----------------------------------------------------------------------------
+# Source: Pitch Deck slide 4 CAPEX allocation. This is the version that sums
+# to exactly £50.0m. The Executive Summary "TurningPoint" table lists risk at
+# £5.0m plus a separate £1.75m inflation line, which overshoots the ceiling by
+# ~£3.35m; that inconsistency is discussed in the financial docs. The clean,
+# balancing breakdown is used as canonical.
+capex:
+  ceiling_gbp: 50_000_000
+  components:
+    - name: Construction (BREEAM Excellent)
+      amount_gbp: 25_500_000
+      note: 5,990 m2 blended base rate + BREEAM premium
+    - name: Specialist lab fit-out & equipment
+      amount_gbp: 8_500_000
+      note: BECCS rig, battery/H2 labs, immersion cooling, V2G/BESS, digital twin
+    - name: Risk allowance (10% NRM1)
+      amount_gbp: 3_400_000
+      note: Disaggregated across design, construction, employer risk
+    - name: Professional fees & PM
+      amount_gbp: 3_100_000
+      note: Design team + T&T cost management, ~12% of construction
+    - name: Working capital reserve (Yr 1-5)
+      amount_gbp: 3_200_000
+      note: Bridges the operating gap during ramp-up
+    - name: External works & site enabling
+      amount_gbp: 2_500_000
+      note: Brownfield remediation, access, EV forecourt, SuDS, landscaping
+    - name: Digital infrastructure
+      amount_gbp: 2_300_000
+      note: BMS, IoT sensors, 5G private network, energy dashboards
+    - name: Community & engagement spaces
+      amount_gbp: 1_500_000
+      note: Climate Room, Community Skills Hub, public realm
+
+# Construction cost benchmarking (BCIS 2026 university lab range).
+construction_benchmark:
+  bcis_low_per_m2: 4000
+  bcis_high_per_m2: 6500
+  # 60/40 spatial split used in the Executive Summary to reach a blended rate.
+  high_spec_fraction: 0.60      # wet labs, containment, specialist plant
+  high_spec_rate_per_m2: 4000
+  support_fraction: 0.40        # offices, circulation, amenity
+  support_rate_per_m2: 3000
+  breeam_premium_pct: 0.12
+  all_in_eac_per_m2: 8333       # incl. fees, risk, inflation
+
+# -----------------------------------------------------------------------------
+# OPEX - annual operating cost
+# -----------------------------------------------------------------------------
+# Two figures exist. The Layout Plan and Pitch Deck use £1.9m/yr. The revised
+# Executive Summary corrects this to £4.5m/yr for a facility of this
+# specification. Both are kept so the model can run either operating case.
+opex:
+  cases:
+    deck: 4_500_000        # deprecated early estimate  <-- see note
+    revised: 4_500_000     # Executive Summary corrected figure
+  # keep the two named cases the documents actually used:
+  early_estimate_gbp: 1_900_000     # Layout Plan / Pitch Deck
+  revised_estimate_gbp: 4_500_000   # Executive Summary
+  breakdown_revised:
+    - {name: Staff and operations, amount_gbp: 1_800_000}
+    - {name: Utilities and energy, amount_gbp: 900_000}
+    - {name: Maintenance & lifecycle replacement, amount_gbp: 700_000}
+    - {name: Equipment servicing, amount_gbp: 450_000}
+    - {name: Digital licences, amount_gbp: 250_000}
+    - {name: Insurance & compliance, amount_gbp: 200_000}
+    - {name: Community & engagement, amount_gbp: 120_000}
+    - {name: Shuttle / access, amount_gbp: 80_000}
+  # breakdown sums to 4.5m
+
+# -----------------------------------------------------------------------------
+# Revenue streams
+# -----------------------------------------------------------------------------
+# Bottom-up base case from the Financial Calculation workbook, with optimistic
+# and conservative columns. Each stream lists the driver assumptions so the
+# build-up is auditable.
+revenue:
+  streams:
+    - name: Research grants (UKRI / Innovate UK)
+      conservative_gbp: 600_000
+      base_gbp: 1_200_000
+      optimistic_gbp: 2_000_000
+      basis: "3 projects x £500k FEC x 80% UKRI funding rate (base)"
+    - name: Industry memberships
+      conservative_gbp: 200_000
+      base_gbp: 365_000
+      optimistic_gbp: 1_500_000
+      basis: "2 Strategic x £100k + 5 Corporate x £30k + 6 SME x £2.5k (base)"
+    - name: Sponsored R&D
+      conservative_gbp: 200_000
+      base_gbp: 500_000
+      optimistic_gbp: 800_000
+      basis: "5 industry-funded projects x £100k (base)"
+    - name: Demonstrator & testing access
+      conservative_gbp: 120_000
+      base_gbp: 250_000
+      optimistic_gbp: 800_000
+      basis: "100 access days x £2,500 charge-out (base)"
+    - name: Partner residency
+      conservative_gbp: 80_000
+      base_gbp: 150_000
+      optimistic_gbp: 500_000
+      basis: "Hot desks + sprint pods + lab-adjacent + strategic package (base)"
+    - name: Training & executive education
+      conservative_gbp: 50_000
+      base_gbp: 100_000
+      optimistic_gbp: 600_000
+      basis: "10 cohorts x 25 participants x £400 (base)"
+    - name: Events & conferences
+      conservative_gbp: 25_000
+      base_gbp: 50_000
+      optimistic_gbp: 300_000
+      basis: "20 events x £2,500 net (base)"
+    - name: Public / regional programme funding
+      conservative_gbp: 100_000
+      base_gbp: 250_000
+      optimistic_gbp: 300_000
+      basis: "Programme-specific annual allowance (base)"
+    - name: Commercialisation upside
+      conservative_gbp: 0
+      base_gbp: 0
+      optimistic_gbp: 400_000
+      basis: "Licensing / spin-outs - excluded from base, upside only"
+
+# -----------------------------------------------------------------------------
+# Societal value (HM Treasury Green Book style, for the ROI narrative)
+# -----------------------------------------------------------------------------
+societal_value:
+  annual_gbp: 10_500_000
+  components:
+    - {name: Direct revenue, amount_gbp: 4_000_000}
+    - {name: Additional research income uplift, amount_gbp: 2_500_000}
+    - {name: Regional economic multiplier, amount_gbp: 2_000_000}
+    - {name: Student employability value, amount_gbp: 1_200_000}
+    - {name: Energy & carbon savings, amount_gbp: 800_000}
+  jobs_supported: 4365     # across Tyseley Green Energy Innovation District
+
+# -----------------------------------------------------------------------------
+# ROI modelling parameters
+# -----------------------------------------------------------------------------
+roi:
+  horizon_years: 10
+  ramp_up_years: 5          # working capital reserve covers this window
+  discount_rate: 0.035      # Green Book social discount proxy used for illustration
